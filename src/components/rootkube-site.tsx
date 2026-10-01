@@ -205,7 +205,7 @@ function HeroSystem() {
           key={node.label}
           className="system-node"
           style={{ left: node.x, top: node.y }}
-          animate={reduceMotion ? undefined : { y: [0, -7, 0] }}
+          animate={reduceMotion ? false : { y: [0, -7, 0] }}
           transition={{ duration: 4, repeat: Infinity, delay: node.delay, ease: "easeInOut" }}
         >
           <span className="system-node-core" />{node.label}
