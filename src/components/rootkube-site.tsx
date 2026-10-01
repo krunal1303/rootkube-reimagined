@@ -462,6 +462,7 @@ function About() {
 }
 
 function Footer() {
+  const [showContactPlaceholder, setShowContactPlaceholder] = useState(false);
   return (
     <>
       <section id="contact" className="relative overflow-hidden py-28 sm:py-36">
@@ -471,9 +472,10 @@ function Footer() {
           <motion.h2 {...reveal} className="mx-auto mt-7 max-w-5xl font-display text-[clamp(3.5rem,8vw,8rem)] font-medium leading-[.9]">Have something worth building?</motion.h2>
           <motion.p {...reveal} className="mx-auto mt-8 max-w-xl text-lg text-muted-foreground">Tell us what you’re trying to solve. We’ll figure out the technology.</motion.p>
           <motion.div {...reveal} className="mt-10 flex flex-wrap justify-center gap-3">
-            <Button size="lg" className="h-12 rounded-none px-6" onClick={() => window.location.href = "mailto:hello@rootkube.com"}>Start a Conversation <ArrowUpRight /></Button>
+            <Button size="lg" className="h-12 rounded-none px-6" onClick={() => setShowContactPlaceholder(true)}>Start a Conversation <ArrowUpRight /></Button>
             <Button asChild size="lg" variant="outline" className="h-12 rounded-none bg-transparent px-6"><a href="#work">Explore Our Work</a></Button>
           </motion.div>
+          {showContactPlaceholder && <p className="mt-5 text-sm text-muted-foreground" role="status">RootKube’s project enquiry details will be added here.</p>}
         </div>
       </section>
       <footer className="border-t border-border py-12">
