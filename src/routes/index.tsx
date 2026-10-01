@@ -1,24 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RootKubeSite } from "@/components/rootkube-site";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "RootKube — Digital Product Engineering" },
+      { name: "description", content: "RootKube engineers digital products, intelligent systems, cloud infrastructure and automation that solve real business problems." },
+      { property: "og:title", content: "RootKube — Digital Product Engineering" },
+      { property: "og:description", content: "Production-grade software, intelligent systems, cloud infrastructure and automation built around real business problems." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  return <RootKubeSite />;
 }
