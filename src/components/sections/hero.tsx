@@ -132,7 +132,7 @@ export function Hero() {
     >
       <div className="hero-beam" aria-hidden="true" />
       <div className="hero-grain" aria-hidden="true" />
-      <div className="page-shell relative z-10 grid w-full gap-12 pb-10 lg:grid-cols-[1.2fr_.8fr] lg:items-end lg:pb-16">
+      <div className="page-shell relative z-10 grid gap-12 pb-10 lg:grid-cols-[1.2fr_.8fr] lg:items-end lg:pb-16">
         <div>
           <motion.div
             {...reveal}
