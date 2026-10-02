@@ -159,7 +159,9 @@
     text-rendering: optimizeLegibility;
   }
 
-  html { scroll-behavior: smooth; background: var(--color-background); }
+  /* No scroll-behavior here: Lenis drives smooth scrolling, and the native
+     implementation fights it. Reduced motion falls back to instant native scroll. */
+  html { background: var(--color-background); }
   ::selection { background: var(--color-primary); color: var(--color-primary-foreground); }
   a, button { -webkit-tap-highlight-color: transparent; }
 }
@@ -190,7 +192,7 @@
 .service-card { position: relative; min-height: 24rem; padding: 1.75rem; border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); overflow: hidden; transition: background .35s, transform .35s; }
 .service-card::before { content: ""; position: absolute; inset: 0 100% auto 0; height: 2px; background: var(--color-primary); transition: inset .4s ease; }
 .service-card:hover { background: color-mix(in oklab, var(--color-primary) 5%, var(--color-card)); transform: translateY(-3px); }
-.service-card:hover::before { inset-right: 0; }
+.service-card:hover::before { inset: 0 0 auto 0; }
 .service-card-lattice { position: absolute; inset: 0; opacity: .3; background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 18px 18px; mask-image: radial-gradient(circle at 100% 0%, black, transparent 65%); transition: opacity .35s; }
 .service-card:hover .service-card-lattice { opacity: .55; }
 .problem-row { display: grid; grid-template-columns: 2rem 1fr; gap: 1rem; padding-block: 1.75rem; border-bottom: 1px solid var(--color-border); align-items: center; }
@@ -223,4 +225,8 @@
 }
 @media (width < 64rem) { .hero-system { min-height: 24rem; } }
 @media (width < 40rem) { .hero-system { min-height: 22rem; } .system-node { font-size: .48rem; padding: .4rem; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  /* SMIL ignores the rules above, and the markup can't branch on reduced motion
+     without breaking hydration, so the travelling dot is hidden here instead. */
+  .signal-dot { display: none; }
+}

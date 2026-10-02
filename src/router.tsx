@@ -8,7 +8,8 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
-    scrollRestoration: true,
+    // Lenis owns scroll position; router restoration would fight it.
+    scrollRestoration: false,
     defaultPreloadStaleTime: 0,
   });
 

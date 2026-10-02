@@ -9,10 +9,13 @@ import { Technology } from "@/components/sections/technology";
 import { WhyRootKube } from "@/components/sections/why-rootkube";
 import { About } from "@/components/sections/about";
 import { Footer } from "@/components/sections/footer";
+import { useAnchorScroll } from "@/motion/use-anchor-scroll";
 
 export function RootKubeSite() {
+  useAnchorScroll();
+
   return (
-    <main className="overflow-clip">
+    <main>
       <SiteHeader />
       <Hero />
       <CapabilityMarquee />
