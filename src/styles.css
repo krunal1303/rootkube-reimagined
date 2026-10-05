@@ -230,3 +230,7 @@
      without breaking hydration, so the travelling dot is hidden here instead. */
   .signal-dot { display: none; }
 }
+
+/* SMIL keeps looping even off-screen; hidden via display while the hero is
+   out of view (set by ScrollTrigger) to free up main-thread budget. */
+.hero-system-idle .signal-dot { display: none; }

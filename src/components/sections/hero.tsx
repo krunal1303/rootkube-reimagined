@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
@@ -5,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/motion/magnetic-button";
 import { MaskedLines } from "@/components/motion/masked-lines";
 import { reveal } from "@/components/sections/shared";
+import { usePreloadDone } from "@/motion/preload-context";
+import { useHeroParallax } from "@/motion/use-hero-parallax";
+import { HeroCursorLines } from "@/motion/hero-cursor-lines";
 
 const nodes = [
   { label: "AI", x: "14%", y: "20%", delay: 0 },
@@ -29,11 +33,11 @@ const noiseField = [
 const signalPath = "M90 120 L360 72 L438 336 L264 270 L108 432 L438 336";
 const dimPath = "M90 120 L264 270 L360 72 M108 432 L264 270";
 
-function HeroSystem() {
+function HeroSystem({ active = true }: { active?: boolean }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="hero-system" aria-hidden="true">
+    <div className={`hero-system ${active ? "" : "hero-system-idle"}`} aria-hidden="true">
       <div className="system-grid" />
       <svg
         className="absolute inset-0 h-full w-full"
@@ -94,10 +98,12 @@ function HeroSystem() {
           style={{ left: node.x, top: node.y }}
           initial={{ opacity: 0, scale: 0.7 }}
           animate={
-            reduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 1, scale: 1, y: [0, -7, 0] }
+            reduceMotion || !active
+              ? { opacity: 1, scale: 1, y: 0 }
+              : { opacity: 1, scale: 1, y: [0, -7, 0] }
           }
           transition={
-            reduceMotion
+            reduceMotion || !active
               ? { duration: 0 }
               : {
                   opacity: { duration: 0.4, delay: 0.5 + i * 0.07 },
@@ -125,8 +131,14 @@ function HeroSystem() {
 }
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const preloadDone = usePreloadDone();
+  const heroActive = useHeroParallax(sectionRef, panelRef);
+
   return (
     <section
+      ref={sectionRef}
       id="top"
       className="relative flex min-h-[94svh] items-end overflow-hidden border-b border-border pt-28"
     >
@@ -143,6 +155,7 @@ export function Hero() {
           <MaskedLines
             as="h1"
             className="max-w-5xl font-display text-[clamp(3.5rem,8.4vw,8.7rem)] font-medium leading-[0.89] text-balance"
+            animate={preloadDone ? "visible" : "initial"}
             lines={[
               "We build technology",
               <>
@@ -183,11 +196,14 @@ export function Hero() {
           </motion.div>
         </div>
         <motion.div
+          ref={panelRef}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.25 }}
+          className="relative"
         >
-          <HeroSystem />
+          <HeroSystem active={heroActive} />
+          <HeroCursorLines targetRef={panelRef} />
         </motion.div>
       </div>
       <a

@@ -8,12 +8,14 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SmoothScrollProvider } from "@/motion/smooth-scroll-provider";
 import { CustomCursor } from "@/motion/custom-cursor";
+import { Preloader } from "@/motion/preloader";
+import { PreloadContext } from "@/motion/preload-context";
 
 function NotFoundComponent() {
   return (
@@ -115,13 +117,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [preloadDone, setPreloadDone] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <SmoothScrollProvider>
         <CustomCursor />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <Preloader onDone={() => setPreloadDone(true)} />
+        <PreloadContext.Provider value={preloadDone}>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </PreloadContext.Provider>
       </SmoothScrollProvider>
     </QueryClientProvider>
   );
