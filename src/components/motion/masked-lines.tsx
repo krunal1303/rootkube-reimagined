@@ -26,7 +26,9 @@ export function MaskedLines({
             className="block"
             variants={lineVariants}
             initial="initial"
-            {...(animate ? { animate: animate === "visible" ? "whileInView" : "initial" } : { whileInView: "whileInView", viewport: { once: true, margin: "-80px" } })}
+            {...(animate
+              ? { animate: animate === "visible" ? "whileInView" : "initial" }
+              : { whileInView: "whileInView", viewport: { once: true, margin: "-80px" } })}
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 }}
           >
             {line}
