@@ -157,7 +157,7 @@ export function Hero() {
             className="max-w-5xl font-display text-[clamp(3.5rem,8.4vw,8.7rem)] font-medium leading-[0.89] text-balance"
             animate={preloadDone ? "visible" : "initial"}
             lines={[
-              "We build technologyyy",
+              "We build technology",
               <>
                 that moves businesses <span className="text-primary">forward.</span>
               </>,
