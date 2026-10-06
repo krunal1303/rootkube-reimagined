@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { MaskedLines } from "@/components/motion/masked-lines";
-import { SectionLabel, reveal } from "@/components/sections/shared";
+import { SectionLabel, revealSoft } from "@/components/sections/shared";
 
 export function Introduction() {
   return (
@@ -15,9 +15,19 @@ export function Introduction() {
               <span className="text-muted-foreground">not create more complexity.</span>,
             ]}
           />
-          <motion.div {...reveal} className="mt-12 grid gap-8 border-t border-border pt-8 sm:grid-cols-2">
-            <p className="text-xl leading-8 text-foreground">We work with businesses to design, build, modernize and scale the digital systems they depend on.</p>
-            <p className="max-w-md text-base leading-7 text-muted-foreground">From first architecture decisions to production operations, every engagement is grounded in the business outcome—not technology for technology’s sake.</p>
+          <motion.div
+            {...revealSoft}
+            transition={{ ...revealSoft.transition, delay: 0.14 }}
+            className="mt-12 grid gap-8 border-t border-border pt-8 sm:grid-cols-2"
+          >
+            <p className="text-xl leading-8 text-foreground">
+              We work with businesses to design, build, modernize and scale the digital systems they
+              depend on.
+            </p>
+            <p className="max-w-md text-base leading-7 text-muted-foreground">
+              From first architecture decisions to production operations, every engagement is
+              grounded in the business outcome—not technology for technology’s sake.
+            </p>
           </motion.div>
         </div>
       </div>
