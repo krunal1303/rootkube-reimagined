@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { ScrambleText } from "@/components/motion/scramble-text";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { usePointerSpotlight } from "@/components/motion/use-pointer-spotlight";
 import { SectionLabel, revealRise, revealSoft, stagger } from "@/components/sections/shared";
 
@@ -68,7 +69,7 @@ export function Services() {
       <div className="page-shell">
         <SectionLabel index="02">Capabilities</SectionLabel>
         <div className="mt-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <MaskedLines className="section-heading" lines={["What we build"]} />
+          <SplitHeading className="section-heading">What we build</SplitHeading>
           <motion.p
             {...revealSoft}
             transition={{ ...revealSoft.transition, delay: 0.12 }}
@@ -85,18 +86,26 @@ export function Services() {
           {services.map((service, i) => {
             const Icon = service.icon;
             return (
+              /* tabIndex: the card carries a hover affordance, so it needs to
+                 be reachable and emphasised by keyboard too. */
               <motion.article
                 key={service.title}
                 {...revealRise}
                 transition={{ ...revealRise.transition, delay: stagger(i, 0.06) }}
                 className="service-card group"
+                data-cursor="view"
+                data-cursor-label="Explore"
+                tabIndex={0}
               >
                 <div className="service-card-lattice" aria-hidden="true" />
                 <div className="service-card-spot" aria-hidden="true" />
                 <div className="relative flex items-start justify-between">
-                  <span className="font-mono text-[10px] tracking-[0.15em] text-muted-foreground">
+                  <ScrambleText
+                    className="font-mono text-[10px] tracking-[0.15em] text-muted-foreground"
+                    duration={0.8}
+                  >
                     {service.code}
-                  </span>
+                  </ScrambleText>
                   <Icon
                     className="size-6 text-primary transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110"
                     strokeWidth={1.3}

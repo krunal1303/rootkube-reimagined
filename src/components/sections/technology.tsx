@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { DatabaseZap } from "lucide-react";
 import { motion } from "motion/react";
 
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealSoft, stagger } from "@/components/sections/shared";
 import { useGsap } from "@/motion/use-gsap";
 
@@ -35,7 +35,7 @@ export function Technology() {
       <div className="page-shell">
         <SectionLabel index="05">Technology</SectionLabel>
         <div className="mt-12 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-          <MaskedLines className="section-heading" lines={["Built with", "modern technology."]} />
+          <SplitHeading className="section-heading">Built with modern technology.</SplitHeading>
           <motion.p {...revealSoft} className="max-w-lg text-muted-foreground">
             We choose technology to fit the system—not the other way around. Our toolkit evolves
             with the problem.

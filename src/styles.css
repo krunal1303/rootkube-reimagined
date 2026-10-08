@@ -175,18 +175,67 @@
 @utility section-space { padding-block: clamp(6rem, 11vw, 10rem); }
 @utility section-heading { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 6.5rem); font-weight: 500; line-height: .98; }
 @utility section-label { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: .67rem; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted-foreground); }
-@utility nav-link { position: relative; font-size: .78rem; color: var(--color-muted-foreground); transition: color .2s; &::after { content: ""; position: absolute; inset: auto 0 -.5rem; height: 1px; background: var(--color-primary); transform: scaleX(0); transform-origin: right; transition: transform .25s; } &:hover { color: var(--color-foreground); } &:hover::after { transform: scaleX(1); transform-origin: left; } }
+@utility nav-link { position: relative; font-size: .78rem; color: var(--color-muted-foreground); transition: color .2s; &::after { content: ""; position: absolute; inset: auto 0 -.5rem; height: 1px; background: var(--color-primary); transform: scaleX(0); transform-origin: right; transition: transform .25s; } &:hover { color: var(--color-foreground); } &:hover::after { transform: scaleX(1); transform-origin: left; } &[data-active]{ color: var(--color-foreground); } &[data-active]::after { transform: scaleX(1); transform-origin: left; } }
 
 .hero-beam { position: absolute; inset: 0; background: radial-gradient(ellipse at 78% 46%, color-mix(in oklab, var(--color-primary) 10%, transparent), transparent 40%); pointer-events: none; }
 .hero-grain { position: absolute; inset: 0; opacity: .05; pointer-events: none; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 120px 120px; }
-.hero-system { position: relative; min-height: 31rem; border: 1px solid var(--color-border); overflow: hidden; background: color-mix(in oklab, var(--color-surface) 88%, transparent); }
+/* `perspective` turns the panel into a 3D stage, so the nodes' translateZ reads
+   as real approach (foreshortening, converging edges) rather than flat scaling.
+   The simulation still keeps its own depth model in JS because it needs those
+   values to place the SVG edges, which are not 3D-transformed.
+
+   NOTE: no `overflow: hidden` here. Per spec, `overflow` other than `visible`
+   forces `transform-style: flat` on the element, which would collapse the whole
+   Z axis and silently undo the effect. Clipping is delegated to a wrapper
+   instead — and a node travelling toward the camera needs room to overhang the
+   panel edge anyway, which is exactly what clipping here would cut off. */
+.hero-system { position: relative; min-height: 31rem; border: 1px solid var(--color-border); background: color-mix(in oklab, var(--color-surface) 88%, transparent); perspective: 1100px; perspective-origin: 50% 45%; transform-style: preserve-3d; }
+/* Radial floor light: brighter at the centre where the near nodes sit, falling
+   off at the edges. Without it the slab reads as evenly lit, which is the
+   giveaway that a "3D" scene is really flat. */
+.hero-system::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 70% 55% at 50% 45%, color-mix(in oklab, var(--color-primary) 7%, transparent), transparent 70%); }
 .noise-point { position: absolute; width: .3rem; height: .3rem; border-radius: 50%; background: color-mix(in oklab, var(--color-primary) 55%, transparent); pointer-events: none; }
 .system-grid, .cta-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, transparent, black 15%, black 80%, transparent); }
-.system-path { fill: none; stroke: color-mix(in oklab, var(--color-primary) 45%, transparent); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.system-path-dim { stroke: var(--color-border); }
+/* The hero's grid is the scene floor, so it is masked radially instead: dense
+   under the graph, dissolving outward. Reads as depth of field. */
+.hero-system .system-grid { mask-image: radial-gradient(ellipse 65% 60% at 50% 48%, black 30%, transparent 78%); }
+/* Background layers stay clipped to the panel even though the panel itself no
+   longer clips, so the grid and floor light keep their hard frame while the
+   nodes are free to overhang it. */
+.hero-system .system-grid, .hero-system::before { border-radius: inherit; clip-path: inset(0); }
+.hero-system-svg { position: absolute; inset: 0; height: 100%; width: 100%; overflow: visible; }
+/* `--edge-depth` (0 far .. 1 near) is written once by the simulation from the
+   average depth of the two nodes an edge joins. Far wires are thinner and
+   fainter, which keeps the lines agreeing with the boxes they connect —
+   otherwise uniform strokes flatten the whole scene back out. Defaults to .5
+   so the SSR/no-JS diagram renders at a sensible mid weight. */
+.system-path { --edge-depth: .5; fill: none; stroke: color-mix(in oklab, var(--color-primary) calc(26% + 30% * var(--edge-depth)), transparent); stroke-width: calc(.72px + .62px * var(--edge-depth)); vector-effect: non-scaling-stroke; transition: stroke .3s ease, stroke-width .3s ease, filter .3s ease; }
+.system-path-dim { stroke: color-mix(in oklab, var(--color-border) calc(55% + 45% * var(--edge-depth)), transparent); }
+/* Hovering a node lights the edges it touches, so the graph answers the
+   question "what is this connected to?" on contact. */
+.system-path-lit { stroke: var(--color-accent); stroke-width: 1.7; filter: drop-shadow(0 0 4px color-mix(in oklab, var(--color-accent) 65%, transparent)); }
 .signal-dot { fill: var(--color-accent); filter: drop-shadow(0 0 5px var(--color-accent)); }
-.system-node { position: absolute; display: flex; align-items: center; gap: .55rem; padding: .55rem .7rem; border: 1px solid var(--color-border); background: color-mix(in oklab, var(--color-background) 83%, transparent); backdrop-filter: blur(8px); font: .56rem var(--font-mono); letter-spacing: .12em; color: var(--color-muted-foreground); }
-.system-node-core { width: .4rem; height: .4rem; background: var(--color-primary); box-shadow: 0 0 12px color-mix(in oklab, var(--color-primary) 70%, transparent); }
+/* Centred on its coordinate via margin rather than a translate, because the
+   simulation owns `transform` outright and a centring translate there would be
+   overwritten on the first frame. */
+/* Centred with the CSS `translate` property, NOT a transform: the simulation
+   owns `transform` outright and rewrites it every frame, so a centring
+   translate there would be destroyed on the first tick.
+
+   The node reads as a solid slab rather than an outline: a top-lit gradient
+   face, a bright top edge and a dark bottom edge (so it has thickness), and a
+   drop shadow placing it above the floor. `will-change` is set because every
+   one of these is recomposited constantly. */
+.system-node { position: absolute; display: flex; align-items: center; gap: .55rem; padding: .6rem .8rem; border: 1px solid color-mix(in oklab, var(--color-border) 90%, var(--color-primary)); border-top-color: color-mix(in oklab, var(--color-primary) 32%, var(--color-border)); border-bottom-color: color-mix(in oklab, var(--color-background) 70%, black); background: linear-gradient(160deg, color-mix(in oklab, var(--color-surface) 92%, var(--color-primary)) 0%, color-mix(in oklab, var(--color-background) 88%, transparent) 55%, color-mix(in oklab, var(--color-background) 95%, black) 100%); backdrop-filter: blur(10px); box-shadow: 0 1px 0 color-mix(in oklab, var(--color-primary) 14%, transparent) inset, 0 10px 22px -8px rgb(0 0 0 / .72), 0 2px 6px -2px rgb(0 0 0 / .5); font: .56rem var(--font-mono); letter-spacing: .12em; color: var(--color-muted-foreground); white-space: nowrap; translate: -50% -50%; transition: border-color .35s ease, color .35s ease, box-shadow .35s ease, background .35s ease; will-change: transform, opacity; transform-style: preserve-3d; }
+/* Hovered: the slab lifts (the JS adds the rise and the scale), so the shadow
+   grows and softens the way a real cast shadow does with elevation, and an
+   accent rim picks out the lit edge. */
+/* Hovered: the node is travelling toward the camera (JS translateZ), so the
+   cast shadow grows and softens the way a real one does as an object lifts away
+   from the surface behind it, and an accent rim picks out the lit top edge. */
+.system-node-hot { border-color: color-mix(in oklab, var(--color-accent) 60%, transparent); border-top-color: color-mix(in oklab, var(--color-accent) 85%, transparent); color: var(--color-foreground); background: linear-gradient(160deg, color-mix(in oklab, var(--color-accent) 15%, var(--color-surface)) 0%, color-mix(in oklab, var(--color-background) 85%, transparent) 55%, color-mix(in oklab, var(--color-background) 93%, black) 100%); box-shadow: 0 1px 0 color-mix(in oklab, var(--color-accent) 34%, transparent) inset, 0 34px 60px -14px rgb(0 0 0 / .85), 0 10px 20px -8px rgb(0 0 0 / .6), 0 0 34px -4px color-mix(in oklab, var(--color-accent) 45%, transparent); }
+.system-node-core { width: .4rem; height: .4rem; background: var(--color-primary); box-shadow: 0 0 12px color-mix(in oklab, var(--color-primary) 70%, transparent); flex: none; transition: background .35s ease, box-shadow .35s ease; }
+.system-node-hot .system-node-core { background: var(--color-accent); box-shadow: 0 0 16px color-mix(in oklab, var(--color-accent) 85%, transparent); }
 .system-status { position: absolute; right: 1rem; bottom: 1rem; display: flex; align-items: center; gap: .5rem; font: .55rem var(--font-mono); letter-spacing: .14em; color: var(--color-muted-foreground); }
 .status-dot { display: inline-block; width: .45rem; height: .45rem; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 10px color-mix(in oklab, var(--color-accent) 55%, transparent); }
 .service-card { position: relative; min-height: 24rem; padding: 1.75rem; border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); overflow: hidden; transition: background .35s, transform .35s; }
@@ -228,6 +277,28 @@
 .principle-cell { transition: background .35s; }
 .principle-cell:hover { background: color-mix(in oklab, var(--color-contrast-foreground) 5%, transparent); }
 .cta-grid { opacity: .25; mask-image: radial-gradient(circle, black, transparent 70%); }
+/* SplitText writes these. The mask wrapper it generates is display:block with
+   overflow clipped; tight display line-heights (.89-.98 here) can clip
+   descenders and accents, so a little bottom padding is given back without
+   changing the visual rhythm. */
+/* Keyboard parity for the pointer-only affordances above: a focused card gets
+   the same emphasis hover gives, so tabbing through is not a blind walk. */
+.service-card:focus-visible { outline: none; background: color-mix(in oklab, var(--color-primary) 6%, var(--color-card)); }
+.service-card:focus-visible::before { inset: 0 0 auto 0; }
+.service-card:focus-visible .service-card-lattice { opacity: .55; }
+.split-line { padding-bottom: .08em; }
+/* Words are the animated unit, so each needs its own compositing box. */
+.split-line > div, .split-line > span { will-change: transform; }
+/* Scramble targets must not reflow while characters cycle through different
+   glyph widths, or surrounding layout jitters every frame. Reserving the
+   resolved width with `ch` units stops the jitter WITHOUT `nowrap`, which would
+   push long codes like "03 / INFRASTRUCTURE" out of a narrow card instead of
+   letting them wrap. `min-width` (not `width`) so wrapping still works when the
+   container really is too narrow. */
+.scramble-lock { display: inline-block; font-variant-numeric: tabular-nums; min-width: var(--scramble-w, auto); }
+/* Mono glyphs are uniform, so once the width is held the only thing that can
+   shift is the line count — and that is what the `ch` reservation pins. */
+
 .footer-title { font: .63rem var(--font-mono); letter-spacing: .15em; text-transform: uppercase; color: var(--color-primary); }
 .footer-links { display: flex; flex-direction: column; gap: .7rem; margin-top: 1.25rem; font-size: .85rem; color: var(--color-muted-foreground); }
 .footer-links a:hover { color: var(--color-foreground); }
@@ -243,7 +314,23 @@
    class is in the server HTML and removed on hydration is not an option here,
    so instead reduced motion is the only state that needs a static fallback —
    and there the strip should hold still anyway). */
-.marquee-track { will-change: transform; }
+.marquee-track { will-change: transform; transform-style: preserve-3d; }
+
+/* The band is the camera for the strip. `perspective` here (not on the track)
+   is what gives each item its own vanishing point as it crosses, so the row
+   reads as a cylinder turning rather than a plane being skewed.
+
+   NOTE the absence of `overflow: hidden`, which would force
+   `transform-style: flat` and silently collapse the whole effect — the same
+   trap as `.hero-system`. The strip is clipped with `clip-path` instead, which
+   does not create a 3D-flattening context. A horizontal mask is layered on so
+   items dissolve at the edges instead of being cut off mid-turn, which is what
+   makes the rotation read as continuous rather than clipped. */
+.capability-band { position: relative; perspective: 620px; perspective-origin: 50% 50%; transform-style: preserve-3d; clip-path: inset(0); -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent); mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent); }
+/* Each item turns independently, so each needs its own 3D context and a
+   consistent pivot. `backface-visibility` keeps a far-turned item from flashing
+   its reversed face at steep angles. */
+.marquee-item { transform-style: preserve-3d; transform-origin: 50% 50%; backface-visibility: hidden; will-change: transform, opacity; }
 
 @media (width >= 40rem) {
   .problem-row { grid-template-columns: 2rem 1fr minmax(12rem,.65fr); gap: 1.5rem; }
@@ -256,8 +343,10 @@
 @media (width < 64rem) { .hero-system { min-height: 24rem; } }
 @media (width < 40rem) { .hero-system { min-height: 22rem; } .system-node { font-size: .48rem; padding: .4rem; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  /* SMIL ignores the rules above, and the markup can't branch on reduced motion
-     without breaking hydration, so the travelling dot is hidden here instead. */
+  /* The packet dots are positioned entirely by JS, which is skipped under
+     reduced motion, so they would sit unpositioned at the origin. The markup
+     can't branch on the media query without breaking hydration, so they are
+     hidden here instead. */
   .signal-dot { display: none; }
   /* useGsap skips its effect entirely under reduced motion, so anything that
      starts hidden and is revealed by a scrub needs its resolved state here or
@@ -266,6 +355,7 @@
   .tech-core-icon { animation: none; opacity: 1; }
 }
 
-/* SMIL keeps looping even off-screen; hidden via display while the hero is
-   out of view (set by ScrollTrigger) to free up main-thread budget. */
-.hero-system-idle .signal-dot { display: none; }
+/* The packet timelines are paused off-screen by useHeroNetwork; hiding the dots
+   as well means a paused packet doesn't sit frozen mid-wire if the hero is
+   scrolled back into view before the timeline resumes. */
+.hero-system-idle .signal-dot { opacity: 0 !important; }

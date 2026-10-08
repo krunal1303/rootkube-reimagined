@@ -7,9 +7,13 @@ import { MagneticButton } from "@/components/motion/magnetic-button";
 import { Logo, navItems } from "@/components/sections/shared";
 import { useHeaderScrollState } from "@/motion/use-header-scroll-state";
 import { useSmoothScroll } from "@/motion/smooth-scroll-context";
+import { useActiveSection } from "@/motion/use-active-section";
+
+const SECTION_IDS = navItems.map(([, id]) => id);
 
 export function SiteHeader() {
   const { scrolled, hidden } = useHeaderScrollState();
+  const activeSection = useActiveSection(SECTION_IDS);
   const { stop, start } = useSmoothScroll();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,7 +33,15 @@ export function SiteHeader() {
         <Logo />
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
           {navItems.map(([label, id]) => (
-            <a key={id} href={`#${id}`} className="nav-link">
+            <a
+              key={id}
+              href={`#${id}`}
+              className="nav-link"
+              // Drives the persistent underline, and tells assistive tech which
+              // section the page is currently showing.
+              data-active={activeSection === id ? "true" : undefined}
+              aria-current={activeSection === id ? "true" : undefined}
+            >
               {label}
             </a>
           ))}

@@ -2,7 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 
 import { CountUp } from "@/components/motion/count-up";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealSlide, stagger } from "@/components/sections/shared";
 
 const problems = [
@@ -20,10 +20,9 @@ export function Problems() {
       <div className="page-shell grid gap-12 lg:grid-cols-[.65fr_1.35fr]">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <SectionLabel index="03">Business outcomes</SectionLabel>
-          <MaskedLines
-            className="section-heading mt-12 max-w-xl"
-            lines={["Built around", "your problems."]}
-          />
+          <SplitHeading className="section-heading mt-12 max-w-xl">
+            Built around your problems.
+          </SplitHeading>
         </div>
         <div className="border-t border-border">
           {problems.map(([problem, answer], i) => (

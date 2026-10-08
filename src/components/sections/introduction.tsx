@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealSoft } from "@/components/sections/shared";
 
 export function Introduction() {
@@ -8,13 +8,10 @@ export function Introduction() {
       <div className="page-shell grid gap-10 lg:grid-cols-[.35fr_1.65fr]">
         <SectionLabel index="01">Our point of view</SectionLabel>
         <div>
-          <MaskedLines
-            className="section-heading max-w-5xl"
-            lines={[
-              "Technology should solve problems,",
-              <span className="text-muted-foreground">not create more complexity.</span>,
-            ]}
-          />
+          <SplitHeading className="section-heading max-w-5xl">
+            Technology should solve problems,{" "}
+            <span className="text-muted-foreground">not create more complexity.</span>
+          </SplitHeading>
           <motion.div
             {...revealSoft}
             transition={{ ...revealSoft.transition, delay: 0.14 }}

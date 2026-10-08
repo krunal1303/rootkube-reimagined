@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion } from "motion/react";
 
 import { CountUp } from "@/components/motion/count-up";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealRise, stagger } from "@/components/sections/shared";
 import { useGsap } from "@/motion/use-gsap";
 
@@ -51,7 +51,7 @@ export function Process() {
     <section className="section-space">
       <div className="page-shell">
         <SectionLabel index="04">Our process</SectionLabel>
-        <MaskedLines className="section-heading mt-12" lines={["From idea to production."]} />
+        <SplitHeading className="section-heading mt-12">From idea to production.</SplitHeading>
         <div ref={gridRef} className="process-grid mt-16">
           <div className="process-line" aria-hidden="true">
             <div className="process-line-fill" />

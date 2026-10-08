@@ -1,22 +1,17 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/motion/magnetic-button";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { reveal } from "@/components/sections/shared";
 import { usePreloadDone } from "@/motion/preload-context";
 import { useHeroParallax } from "@/motion/use-hero-parallax";
 import { HeroCursorLines } from "@/motion/hero-cursor-lines";
-
-const nodes = [
-  { label: "AI", x: "14%", y: "20%", delay: 0 },
-  { label: "SOFTWARE", x: "61%", y: "12%", delay: 0.5 },
-  { label: "CLOUD", x: "73%", y: "56%", delay: 1 },
-  { label: "DATA", x: "18%", y: "72%", delay: 1.5 },
-  { label: "AUTOMATION", x: "44%", y: "45%", delay: 2 },
-];
+import { useHeroPathDraw } from "@/motion/use-hero-path-draw";
+import { useHeroNetwork } from "@/motion/use-hero-network";
+import { HERO_EDGES, HERO_NODES, HERO_ROUTES, incidentEdges } from "@/motion/hero-network";
 
 const noiseField = [
   { x: "22%", y: "14%" },
@@ -30,48 +25,72 @@ const noiseField = [
   { x: "91%", y: "58%" },
 ];
 
-const signalPath = "M90 120 L360 72 L438 336 L264 270 L108 432 L438 336";
-const dimPath = "M90 120 L264 270 L360 72 M108 432 L264 270";
+/**
+ * Fallback geometry for the pre-hydration / reduced-motion diagram.
+ *
+ * The simulation rewrites every edge's `d` from live node centres once it
+ * starts, but the server has no layout to measure, so edges ship with a path
+ * derived from the same fractional coordinates against the viewBox. That keeps
+ * the SSR markup and the first client render byte-identical, and leaves a
+ * correct, complete diagram for anyone who never gets the simulation.
+ */
+const VIEW = 600;
 
-function HeroSystem({ active = true }: { active?: boolean }) {
+function staticEdgePath(edge: (typeof HERO_EDGES)[number]) {
+  const a = HERO_NODES[edge.from];
+  const b = HERO_NODES[edge.to];
+  if (!a || !b) return "";
+  return `M${a.x * VIEW} ${a.y * VIEW} L${b.x * VIEW} ${b.y * VIEW}`;
+}
+
+function HeroSystem({ active = true, draw = false }: { active?: boolean; draw?: boolean }) {
   const reduceMotion = useReducedMotion();
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  // DrawSVG rather than Motion's pathLength: it strokes each edge with its own
+  // timing, so the graph reads as being traced link by link instead of every
+  // edge fading up at once.
+  const traced = useHeroPathDraw(svgRef, draw);
+  // Takes over once the trace finishes: drift, pointer repulsion, live edges
+  // and packet traffic. Gated on `traced` rather than `draw` so it never writes
+  // `d` while DrawSVG is still stroking against a measured path length.
+  useHeroNetwork(panelRef, svgRef, { active, start: traced, hovered });
+
+  const lit = hovered === null ? null : incidentEdges(hovered);
 
   return (
-    <div className={`hero-system ${active ? "" : "hero-system-idle"}`} aria-hidden="true">
+    <div
+      ref={panelRef}
+      className={`hero-system ${active ? "" : "hero-system-idle"}`}
+      aria-hidden="true"
+    >
       <div className="system-grid" />
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 600 600"
-        preserveAspectRatio="none"
-      >
-        <motion.path
-          d={signalPath}
-          className="system-path"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{
-            duration: reduceMotion ? 0 : 0.9,
-            delay: reduceMotion ? 0 : 0.5,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        />
-        <motion.path
-          d={dimPath}
-          className="system-path system-path-dim"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{
-            duration: reduceMotion ? 0 : 0.7,
-            delay: reduceMotion ? 0 : 0.8,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        />
-        {/* Markup stays identical regardless of reduced motion: the server always
-            renders with it off, so any branch here mismatches on hydration.
-            `.signal-dot` is hidden via the reduced-motion media query instead. */}
-        <circle r="4" className="signal-dot">
-          <animateMotion dur="5s" begin="1.4s" repeatCount="indefinite" path={signalPath} />
-        </circle>
+      {/* Once the simulation starts it writes `d` in panel pixels and swaps the
+          viewBox to match, so edges track the real node boxes at any aspect
+          ratio. Until then this square viewBox renders the fallback paths. */}
+      <svg ref={svgRef} className="hero-system-svg" viewBox={`0 0 ${VIEW} ${VIEW}`}>
+        {HERO_EDGES.map((edge, i) => (
+          <path
+            key={`${edge.from}-${edge.to}`}
+            data-edge={i}
+            d={staticEdgePath(edge)}
+            className={[
+              "system-path",
+              edge.kind === "dim" ? "system-path-dim" : "",
+              edge.kind === "dim" ? "hero-draw-dim" : "hero-draw",
+              lit?.includes(i) ? "system-path-lit" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          />
+        ))}
+        {/* One dot per route. They start hidden and are positioned entirely by
+            the hook, so with JS off they are simply absent. */}
+        {HERO_ROUTES.map((_, i) => (
+          <circle key={i} data-packet={i} r="3.5" className="signal-dot" opacity="0" />
+        ))}
       </svg>
 
       {/* These settle at opacity 0 either way, so reduced motion only shortens
@@ -91,26 +110,21 @@ function HeroSystem({ active = true }: { active?: boolean }) {
         />
       ))}
 
-      {nodes.map((node, i) => (
+      {HERO_NODES.map((node, i) => (
         <motion.div
           key={node.label}
-          className="system-node"
-          style={{ left: node.x, top: node.y }}
+          data-node={i}
+          className={`system-node ${hovered === i ? "system-node-hot" : ""}`}
+          style={{ left: `${node.x * 100}%`, top: `${node.y * 100}%` }}
+          onPointerEnter={() => setHovered(i)}
+          onPointerLeave={() => setHovered((current) => (current === i ? null : current))}
           initial={{ opacity: 0, scale: 0.7 }}
-          animate={
-            reduceMotion || !active
-              ? { opacity: 1, scale: 1, y: 0 }
-              : { opacity: 1, scale: 1, y: [0, -7, 0] }
-          }
-          transition={
-            reduceMotion || !active
-              ? { duration: 0 }
-              : {
-                  opacity: { duration: 0.4, delay: 0.5 + i * 0.07 },
-                  scale: { duration: 0.4, delay: 0.5 + i * 0.07, ease: [0.22, 1, 0.36, 1] },
-                  y: { duration: 4, repeat: Infinity, delay: node.delay + 1.2, ease: "easeInOut" },
-                }
-          }
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.4,
+            delay: reduceMotion ? 0 : 0.5 + i * 0.07,
+            ease: [0.22, 1, 0.36, 1],
+          }}
         >
           <span className="system-node-core" />
           {node.label}
@@ -152,17 +166,15 @@ export function Hero() {
           >
             <span className="status-dot" /> Digital Product Engineering
           </motion.div>
-          <MaskedLines
+          <SplitHeading
             as="h1"
             className="max-w-5xl font-display text-[clamp(3.5rem,8.4vw,8.7rem)] font-medium leading-[0.89] text-balance"
-            animate={preloadDone ? "visible" : "initial"}
-            lines={[
-              "We build technology",
-              <>
-                that moves businesses <span className="text-primary">forward.</span>
-              </>,
-            ]}
-          />
+            enabled={preloadDone}
+            stagger={0.035}
+            duration={1}
+          >
+            We build technology that moves businesses <span className="text-primary">forward.</span>
+          </SplitHeading>
           <motion.div
             {...reveal}
             transition={{ ...reveal.transition, delay: 0.18 }}
@@ -202,7 +214,7 @@ export function Hero() {
           transition={{ duration: 1, delay: 0.25 }}
           className="relative"
         >
-          <HeroSystem active={heroActive} />
+          <HeroSystem active={heroActive} draw={preloadDone} />
           <HeroCursorLines targetRef={panelRef} />
         </motion.div>
       </div>

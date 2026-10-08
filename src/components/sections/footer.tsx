@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/motion/magnetic-button";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { Logo, navItems, reveal, revealSoft } from "@/components/sections/shared";
 
 export function Footer() {
@@ -20,10 +20,9 @@ export function Footer() {
           >
             Start a conversation
           </motion.p>
-          <MaskedLines
-            className="mx-auto mt-7 max-w-5xl font-display text-[clamp(3.5rem,8vw,8rem)] font-medium leading-[.9]"
-            lines={["Have something", "worth building?"]}
-          />
+          <SplitHeading className="mx-auto mt-7 max-w-5xl font-display text-[clamp(3.5rem,8vw,8rem)] font-medium leading-[.9]">
+            Have something worth building?
+          </SplitHeading>
           <motion.p
             {...revealSoft}
             transition={{ ...revealSoft.transition, delay: 0.16 }}

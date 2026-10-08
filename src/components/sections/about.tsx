@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion } from "motion/react";
 
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealRise, revealSoft, stagger } from "@/components/sections/shared";
 import { useGsap } from "@/motion/use-gsap";
 
@@ -18,7 +18,7 @@ export function About() {
   // panel is the page's one tonal shift, so it earns a scroll-linked moment the
   // other sections don't get.
   useGsap(sectionRef, ({ gsap, scope }) => {
-    const heading = scope.querySelector<HTMLElement>(".about-heading");
+    const heading = scope.querySelector<HTMLElement>(".about-heading-shift");
     if (!heading) return;
 
     gsap.fromTo(
@@ -37,13 +37,15 @@ export function About() {
       ref={sectionRef}
       id="about"
       className="section-space border-y border-border bg-contrast text-contrast-foreground"
+      data-cursor-invert
     >
       <div className="page-shell">
         <SectionLabel index="07">Our story</SectionLabel>
-        <MaskedLines
-          className="about-heading mt-12 max-w-5xl font-display text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[.98]"
-          lines={["Two friends. One obsession:", "building useful technology."]}
-        />
+        <div className="about-heading-shift">
+          <SplitHeading className="about-heading mt-12 max-w-5xl font-display text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[.98]">
+            Two friends. One obsession: building useful technology.
+          </SplitHeading>
+        </div>
         <div className="mt-20 grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
           <p className="font-mono text-xs uppercase tracking-[0.15em] text-contrast-muted">
             A shared engineering mindset

@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 
 import { CountUp } from "@/components/motion/count-up";
-import { MaskedLines } from "@/components/motion/masked-lines";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { SectionLabel, revealSlide, revealSoft, stagger } from "@/components/sections/shared";
 
 const items = [
@@ -19,10 +19,9 @@ export function WhyRootKube() {
       <div className="page-shell grid gap-14 lg:grid-cols-[1.1fr_.9fr]">
         <div>
           <SectionLabel index="06">Why RootKube</SectionLabel>
-          <MaskedLines
-            className="section-heading mt-12 max-w-3xl"
-            lines={["Engineering with", <span className="text-primary">purpose.</span>]}
-          />
+          <SplitHeading className="section-heading mt-12 max-w-3xl">
+            Engineering with <span className="text-primary">purpose.</span>
+          </SplitHeading>
           <motion.p
             {...revealSoft}
             transition={{ ...revealSoft.transition, delay: 0.15 }}

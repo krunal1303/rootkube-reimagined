@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-
+import { ScrambleText } from "@/components/motion/scramble-text";
 import { EASE } from "@/motion/ease";
 
 export const navItems = [
@@ -72,11 +71,18 @@ export function Logo() {
   );
 }
 
-export function SectionLabel({ index, children }: { index: string; children: ReactNode }) {
+export function SectionLabel({ index, children }: { index: string; children: string }) {
   return (
     <div className="section-label">
-      <span>{index}</span>
-      <span>{children}</span>
+      {/* The index scrambles through digits only; the words use the full
+          uppercase pool. Mixing pools keeps the two from resolving in visual
+          lockstep, which looked mechanical. */}
+      <ScrambleText chars="0123456789" duration={0.7}>
+        {index}
+      </ScrambleText>
+      <ScrambleText duration={1} delay={0.08}>
+        {children}
+      </ScrambleText>
     </div>
   );
 }
