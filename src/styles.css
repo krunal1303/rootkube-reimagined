@@ -161,24 +161,95 @@
 
   /* No scroll-behavior here: Lenis drives smooth scrolling, and the native
      implementation fights it. Reduced motion falls back to instant native scroll. */
-  html { background: var(--color-background); }
-  ::selection { background: var(--color-primary); color: var(--color-primary-foreground); }
-  a, button { -webkit-tap-highlight-color: transparent; }
+  html {
+    background: var(--color-background);
+  }
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 @utility page-shell {
   width: min(100% - 2rem, 88rem);
   margin-inline: auto;
-  @media (width >= 48rem) { width: min(100% - 4rem, 88rem); }
+  @media (width >= 48rem) {
+    width: min(100% - 4rem, 88rem);
+  }
 }
 
-@utility section-space { padding-block: clamp(6rem, 11vw, 10rem); }
-@utility section-heading { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 6.5rem); font-weight: 500; line-height: .98; }
-@utility section-label { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: .67rem; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted-foreground); }
-@utility nav-link { position: relative; font-size: .78rem; color: var(--color-muted-foreground); transition: color .2s; &::after { content: ""; position: absolute; inset: auto 0 -.5rem; height: 1px; background: var(--color-primary); transform: scaleX(0); transform-origin: right; transition: transform .25s; } &:hover { color: var(--color-foreground); } &:hover::after { transform: scaleX(1); transform-origin: left; } &[data-active]{ color: var(--color-foreground); } &[data-active]::after { transform: scaleX(1); transform-origin: left; } }
+@utility section-space {
+  padding-block: clamp(6rem, 11vw, 10rem);
+}
+@utility section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  font-weight: 500;
+  line-height: 0.98;
+}
+@utility section-label {
+  display: flex;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+@utility nav-link {
+  position: relative;
+  font-size: 0.78rem;
+  color: var(--color-muted-foreground);
+  transition: color 0.2s;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -0.5rem;
+    height: 1px;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.25s;
+  }
+  &:hover {
+    color: var(--color-foreground);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  &[data-active] {
+    color: var(--color-foreground);
+  }
+  &[data-active]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
 
-.hero-beam { position: absolute; inset: 0; background: radial-gradient(ellipse at 78% 46%, color-mix(in oklab, var(--color-primary) 10%, transparent), transparent 40%); pointer-events: none; }
-.hero-grain { position: absolute; inset: 0; opacity: .05; pointer-events: none; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 120px 120px; }
+.hero-beam {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 78% 46%,
+    color-mix(in oklab, var(--color-primary) 10%, transparent),
+    transparent 40%
+  );
+  pointer-events: none;
+}
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
 /* `perspective` turns the panel into a 3D stage, so the nodes' translateZ reads
    as real approach (foreshortening, converging edges) rather than flat scaling.
    The simulation still keeps its own depth model in JS because it needs those
@@ -189,32 +260,102 @@
    Z axis and silently undo the effect. Clipping is delegated to a wrapper
    instead — and a node travelling toward the camera needs room to overhang the
    panel edge anyway, which is exactly what clipping here would cut off. */
-.hero-system { position: relative; min-height: 31rem; border: 1px solid var(--color-border); background: color-mix(in oklab, var(--color-surface) 88%, transparent); perspective: 1100px; perspective-origin: 50% 45%; transform-style: preserve-3d; }
+.hero-system {
+  position: relative;
+  min-height: 31rem;
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+}
 /* Radial floor light: brighter at the centre where the near nodes sit, falling
    off at the edges. Without it the slab reads as evenly lit, which is the
    giveaway that a "3D" scene is really flat. */
-.hero-system::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 70% 55% at 50% 45%, color-mix(in oklab, var(--color-primary) 7%, transparent), transparent 70%); }
-.noise-point { position: absolute; width: .3rem; height: .3rem; border-radius: 50%; background: color-mix(in oklab, var(--color-primary) 55%, transparent); pointer-events: none; }
-.system-grid, .cta-grid { position: absolute; inset: 0; opacity: .35; background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, transparent, black 15%, black 80%, transparent); }
+.hero-system::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 45%,
+    color-mix(in oklab, var(--color-primary) 7%, transparent),
+    transparent 70%
+  );
+}
+.noise-point {
+  position: absolute;
+  width: 0.3rem;
+  height: 0.3rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--color-primary) 55%, transparent);
+  pointer-events: none;
+}
+.system-grid,
+.cta-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 80%, transparent);
+}
 /* The hero's grid is the scene floor, so it is masked radially instead: dense
    under the graph, dissolving outward. Reads as depth of field. */
-.hero-system .system-grid { mask-image: radial-gradient(ellipse 65% 60% at 50% 48%, black 30%, transparent 78%); }
+.hero-system .system-grid {
+  mask-image: radial-gradient(ellipse 65% 60% at 50% 48%, black 30%, transparent 78%);
+}
 /* Background layers stay clipped to the panel even though the panel itself no
    longer clips, so the grid and floor light keep their hard frame while the
    nodes are free to overhang it. */
-.hero-system .system-grid, .hero-system::before { border-radius: inherit; clip-path: inset(0); }
-.hero-system-svg { position: absolute; inset: 0; height: 100%; width: 100%; overflow: visible; }
+.hero-system .system-grid,
+.hero-system::before {
+  border-radius: inherit;
+  clip-path: inset(0);
+}
+.hero-system-svg {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
 /* `--edge-depth` (0 far .. 1 near) is written once by the simulation from the
    average depth of the two nodes an edge joins. Far wires are thinner and
    fainter, which keeps the lines agreeing with the boxes they connect —
    otherwise uniform strokes flatten the whole scene back out. Defaults to .5
    so the SSR/no-JS diagram renders at a sensible mid weight. */
-.system-path { --edge-depth: .5; fill: none; stroke: color-mix(in oklab, var(--color-primary) calc(26% + 30% * var(--edge-depth)), transparent); stroke-width: calc(.72px + .62px * var(--edge-depth)); vector-effect: non-scaling-stroke; transition: stroke .3s ease, stroke-width .3s ease, filter .3s ease; }
-.system-path-dim { stroke: color-mix(in oklab, var(--color-border) calc(55% + 45% * var(--edge-depth)), transparent); }
+.system-path {
+  --edge-depth: 0.5;
+  fill: none;
+  stroke: color-mix(
+    in oklab,
+    var(--color-primary) calc(26% + 30% * var(--edge-depth)),
+    transparent
+  );
+  stroke-width: calc(0.72px + 0.62px * var(--edge-depth));
+  vector-effect: non-scaling-stroke;
+  transition:
+    stroke 0.3s ease,
+    stroke-width 0.3s ease,
+    filter 0.3s ease;
+}
+.system-path-dim {
+  stroke: color-mix(in oklab, var(--color-border) calc(55% + 45% * var(--edge-depth)), transparent);
+}
 /* Hovering a node lights the edges it touches, so the graph answers the
    question "what is this connected to?" on contact. */
-.system-path-lit { stroke: var(--color-accent); stroke-width: 1.7; filter: drop-shadow(0 0 4px color-mix(in oklab, var(--color-accent) 65%, transparent)); }
-.signal-dot { fill: var(--color-accent); filter: drop-shadow(0 0 5px var(--color-accent)); }
+.system-path-lit {
+  stroke: var(--color-accent);
+  stroke-width: 1.7;
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--color-accent) 65%, transparent));
+}
+.signal-dot {
+  fill: var(--color-accent);
+  filter: drop-shadow(0 0 5px var(--color-accent));
+}
 /* Centred on its coordinate via margin rather than a translate, because the
    simulation owns `transform` outright and a centring translate there would be
    overwritten on the first frame. */
@@ -226,87 +367,373 @@
    face, a bright top edge and a dark bottom edge (so it has thickness), and a
    drop shadow placing it above the floor. `will-change` is set because every
    one of these is recomposited constantly. */
-.system-node { position: absolute; display: flex; align-items: center; gap: .55rem; padding: .6rem .8rem; border: 1px solid color-mix(in oklab, var(--color-border) 90%, var(--color-primary)); border-top-color: color-mix(in oklab, var(--color-primary) 32%, var(--color-border)); border-bottom-color: color-mix(in oklab, var(--color-background) 70%, black); background: linear-gradient(160deg, color-mix(in oklab, var(--color-surface) 92%, var(--color-primary)) 0%, color-mix(in oklab, var(--color-background) 88%, transparent) 55%, color-mix(in oklab, var(--color-background) 95%, black) 100%); backdrop-filter: blur(10px); box-shadow: 0 1px 0 color-mix(in oklab, var(--color-primary) 14%, transparent) inset, 0 10px 22px -8px rgb(0 0 0 / .72), 0 2px 6px -2px rgb(0 0 0 / .5); font: .56rem var(--font-mono); letter-spacing: .12em; color: var(--color-muted-foreground); white-space: nowrap; translate: -50% -50%; transition: border-color .35s ease, color .35s ease, box-shadow .35s ease, background .35s ease; will-change: transform, opacity; transform-style: preserve-3d; }
+.system-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in oklab, var(--color-border) 90%, var(--color-primary));
+  border-top-color: color-mix(in oklab, var(--color-primary) 32%, var(--color-border));
+  border-bottom-color: color-mix(in oklab, var(--color-background) 70%, black);
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--color-surface) 92%, var(--color-primary)) 0%,
+    color-mix(in oklab, var(--color-background) 88%, transparent) 55%,
+    color-mix(in oklab, var(--color-background) 95%, black) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-primary) 14%, transparent) inset,
+    0 10px 22px -8px rgb(0 0 0 / 0.72),
+    0 2px 6px -2px rgb(0 0 0 / 0.5);
+  font: 0.56rem var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+  translate: -50% -50%;
+  transition:
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease,
+    background 0.35s ease;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
 /* Hovered: the slab lifts (the JS adds the rise and the scale), so the shadow
    grows and softens the way a real cast shadow does with elevation, and an
    accent rim picks out the lit edge. */
 /* Hovered: the node is travelling toward the camera (JS translateZ), so the
    cast shadow grows and softens the way a real one does as an object lifts away
    from the surface behind it, and an accent rim picks out the lit top edge. */
-.system-node-hot { border-color: color-mix(in oklab, var(--color-accent) 60%, transparent); border-top-color: color-mix(in oklab, var(--color-accent) 85%, transparent); color: var(--color-foreground); background: linear-gradient(160deg, color-mix(in oklab, var(--color-accent) 15%, var(--color-surface)) 0%, color-mix(in oklab, var(--color-background) 85%, transparent) 55%, color-mix(in oklab, var(--color-background) 93%, black) 100%); box-shadow: 0 1px 0 color-mix(in oklab, var(--color-accent) 34%, transparent) inset, 0 34px 60px -14px rgb(0 0 0 / .85), 0 10px 20px -8px rgb(0 0 0 / .6), 0 0 34px -4px color-mix(in oklab, var(--color-accent) 45%, transparent); }
-.system-node-core { width: .4rem; height: .4rem; background: var(--color-primary); box-shadow: 0 0 12px color-mix(in oklab, var(--color-primary) 70%, transparent); flex: none; transition: background .35s ease, box-shadow .35s ease; }
-.system-node-hot .system-node-core { background: var(--color-accent); box-shadow: 0 0 16px color-mix(in oklab, var(--color-accent) 85%, transparent); }
-.system-status { position: absolute; right: 1rem; bottom: 1rem; display: flex; align-items: center; gap: .5rem; font: .55rem var(--font-mono); letter-spacing: .14em; color: var(--color-muted-foreground); }
-.status-dot { display: inline-block; width: .45rem; height: .45rem; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 10px color-mix(in oklab, var(--color-accent) 55%, transparent); }
-.service-card { position: relative; min-height: 24rem; padding: 1.75rem; border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); overflow: hidden; transition: background .35s, transform .35s; }
-.service-card::before { content: ""; position: absolute; inset: 0 100% auto 0; height: 2px; background: var(--color-primary); transition: inset .4s ease; }
-.service-card:hover { background: color-mix(in oklab, var(--color-primary) 5%, var(--color-card)); transform: translateY(-3px); }
-.service-card:hover::before { inset: 0 0 auto 0; }
-.service-card-lattice { position: absolute; inset: 0; opacity: .3; background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 18px 18px; mask-image: radial-gradient(circle at 100% 0%, black, transparent 65%); transition: opacity .35s; }
-.service-card:hover .service-card-lattice { opacity: .55; }
+.system-node-hot {
+  border-color: color-mix(in oklab, var(--color-accent) 60%, transparent);
+  border-top-color: color-mix(in oklab, var(--color-accent) 85%, transparent);
+  color: var(--color-foreground);
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--color-accent) 15%, var(--color-surface)) 0%,
+    color-mix(in oklab, var(--color-background) 85%, transparent) 55%,
+    color-mix(in oklab, var(--color-background) 93%, black) 100%
+  );
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-accent) 34%, transparent) inset,
+    0 34px 60px -14px rgb(0 0 0 / 0.85),
+    0 10px 20px -8px rgb(0 0 0 / 0.6),
+    0 0 34px -4px color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+.system-node-core {
+  width: 0.4rem;
+  height: 0.4rem;
+  background: var(--color-primary);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--color-primary) 70%, transparent);
+  flex: none;
+  transition:
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.system-node-hot .system-node-core {
+  background: var(--color-accent);
+  box-shadow: 0 0 16px color-mix(in oklab, var(--color-accent) 85%, transparent);
+}
+.system-status {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 0.55rem var(--font-mono);
+  letter-spacing: 0.14em;
+  color: var(--color-muted-foreground);
+}
+.status-dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+.service-card {
+  position: relative;
+  min-height: 24rem;
+  padding: 1.75rem;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+  transition:
+    background 0.35s,
+    transform 0.35s;
+}
+.service-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 100% auto 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: inset 0.4s ease;
+}
+.service-card:hover {
+  background: color-mix(in oklab, var(--color-primary) 5%, var(--color-card));
+  transform: translateY(-3px);
+}
+.service-card:hover::before {
+  inset: 0 0 auto 0;
+}
+.service-card-lattice {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(circle at 100% 0%, black, transparent 65%);
+  transition: opacity 0.35s;
+}
+.service-card:hover .service-card-lattice {
+  opacity: 0.55;
+}
 /* Cursor-following spotlight. --spot-x/y are written by usePointerSpotlight in
    a rAF; the 50% fallback keeps it centred before the first pointer move. */
-.service-card-spot { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .4s; background: radial-gradient(18rem circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in oklab, var(--color-primary) 13%, transparent), transparent 65%); }
-.service-card:hover .service-card-spot { opacity: 1; }
-.problem-row { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: 1rem; padding-block: 1.75rem; border-bottom: 1px solid var(--color-border); align-items: center; }
-.problem-row > div { grid-column: 2; }
+.service-card-spot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+  background: radial-gradient(
+    18rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-primary) 13%, transparent),
+    transparent 65%
+  );
+}
+.service-card:hover .service-card-spot {
+  opacity: 1;
+}
+.problem-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 1rem;
+  padding-block: 1.75rem;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+.problem-row > div {
+  grid-column: 2;
+}
 /* Hairline sweep on hover: reads as the row being "selected" without shifting
    any text. Scaled from the left so it tracks the reading direction. */
-.problem-row::after { content: ""; position: absolute; inset: auto 0 -1px 0; height: 1px; background: var(--color-primary); transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(0.22, 1, 0.36, 1); }
-.problem-row:hover::after { transform: scaleX(1); }
-.process-grid { position: relative; display: grid; border-top: 1px solid var(--color-border); }
-.process-step { position: relative; border-bottom: 1px solid var(--color-border); padding: 2rem 1.5rem 2.5rem; transition: background .35s; }
-.process-step:hover { background: color-mix(in oklab, var(--color-primary) 4%, transparent); }
-.process-dot { position: absolute; top: -.28rem; left: 1.5rem; width: .52rem; height: .52rem; background: var(--color-primary); }
+.problem-row::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 1px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.problem-row:hover::after {
+  transform: scaleX(1);
+}
+.process-grid {
+  position: relative;
+  display: grid;
+  border-top: 1px solid var(--color-border);
+}
+.process-step {
+  position: relative;
+  border-bottom: 1px solid var(--color-border);
+  padding: 2rem 1.5rem 2.5rem;
+  transition: background 0.35s;
+}
+.process-step:hover {
+  background: color-mix(in oklab, var(--color-primary) 4%, transparent);
+}
+.process-dot {
+  position: absolute;
+  top: -0.28rem;
+  left: 1.5rem;
+  width: 0.52rem;
+  height: 0.52rem;
+  background: var(--color-primary);
+}
 /* Scrub-drawn pipeline across the top border. Sits above the 1px border and is
    purely decorative, so it never affects the grid's own layout. */
-.process-line { position: absolute; inset: -1px 0 auto 0; height: 1px; overflow: hidden; pointer-events: none; }
-.process-line-fill { height: 100%; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, var(--color-primary), var(--color-accent)); }
+.process-line {
+  position: absolute;
+  inset: -1px 0 auto 0;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.process-line-fill {
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+}
 /* Mirrors .problem-row's sweep so the two list sections share one interaction
    language, without inheriting its three-column grid. */
-.value-row { position: relative; display: flex; align-items: center; gap: 1.25rem; padding-block: 1.5rem; border-bottom: 1px solid var(--color-border); }
-.value-row::after { content: ""; position: absolute; inset: auto 0 -1px 0; height: 1px; background: var(--color-primary); transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(0.22, 1, 0.36, 1); }
-.value-row:hover::after { transform: scaleX(1); }
-.tech-ecosystem { position: relative; display: grid; gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
-.tech-core, .tech-group { background: var(--color-background); padding: 2rem; }
-.tech-core { display: flex; align-items: center; gap: 1rem; color: var(--color-primary); font: .7rem/1.6 var(--font-mono); }
-.tech-pill { display: inline-flex; padding: .5rem .75rem; border: 1px solid var(--color-border); font-size: .75rem; transition: border-color .25s, color .25s, background .25s, transform .25s cubic-bezier(0.22, 1, 0.36, 1); }
-.tech-pill:hover { border-color: var(--color-primary); color: var(--color-primary); background: color-mix(in oklab, var(--color-primary) 7%, transparent); transform: translateY(-2px); }
-.tech-core-icon { animation: tech-pulse 3.2s ease-in-out infinite; }
-@keyframes tech-pulse { 0%, 100% { opacity: .75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
-.principle-cell { transition: background .35s; }
-.principle-cell:hover { background: color-mix(in oklab, var(--color-contrast-foreground) 5%, transparent); }
-.cta-grid { opacity: .25; mask-image: radial-gradient(circle, black, transparent 70%); }
+.value-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.value-row::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 1px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.value-row:hover::after {
+  transform: scaleX(1);
+}
+.tech-ecosystem {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+}
+.tech-core,
+.tech-group {
+  background: var(--color-background);
+  padding: 2rem;
+}
+.tech-core {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-primary);
+  font: 0.7rem/1.6 var(--font-mono);
+}
+.tech-pill {
+  display: inline-flex;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  transition:
+    border-color 0.25s,
+    color 0.25s,
+    background 0.25s,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tech-pill:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 7%, transparent);
+  transform: translateY(-2px);
+}
+.tech-core-icon {
+  animation: tech-pulse 3.2s ease-in-out infinite;
+}
+@keyframes tech-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+.principle-cell {
+  transition: background 0.35s;
+}
+.principle-cell:hover {
+  background: color-mix(in oklab, var(--color-contrast-foreground) 5%, transparent);
+}
+.cta-grid {
+  opacity: 0.25;
+  mask-image: radial-gradient(circle, black, transparent 70%);
+}
 /* SplitText writes these. The mask wrapper it generates is display:block with
    overflow clipped; tight display line-heights (.89-.98 here) can clip
    descenders and accents, so a little bottom padding is given back without
    changing the visual rhythm. */
 /* Keyboard parity for the pointer-only affordances above: a focused card gets
    the same emphasis hover gives, so tabbing through is not a blind walk. */
-.service-card:focus-visible { outline: none; background: color-mix(in oklab, var(--color-primary) 6%, var(--color-card)); }
-.service-card:focus-visible::before { inset: 0 0 auto 0; }
-.service-card:focus-visible .service-card-lattice { opacity: .55; }
-.split-line { padding-bottom: .08em; }
+.service-card:focus-visible {
+  outline: none;
+  background: color-mix(in oklab, var(--color-primary) 6%, var(--color-card));
+}
+.service-card:focus-visible::before {
+  inset: 0 0 auto 0;
+}
+.service-card:focus-visible .service-card-lattice {
+  opacity: 0.55;
+}
+.split-line {
+  padding-bottom: 0.08em;
+}
 /* Words are the animated unit, so each needs its own compositing box. */
-.split-line > div, .split-line > span { will-change: transform; }
+.split-line > div,
+.split-line > span {
+  will-change: transform;
+}
 /* Scramble targets must not reflow while characters cycle through different
    glyph widths, or surrounding layout jitters every frame. Reserving the
    resolved width with `ch` units stops the jitter WITHOUT `nowrap`, which would
    push long codes like "03 / INFRASTRUCTURE" out of a narrow card instead of
    letting them wrap. `min-width` (not `width`) so wrapping still works when the
    container really is too narrow. */
-.scramble-lock { display: inline-block; font-variant-numeric: tabular-nums; min-width: var(--scramble-w, auto); }
+.scramble-lock {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  min-width: var(--scramble-w, auto);
+}
 /* Mono glyphs are uniform, so once the width is held the only thing that can
    shift is the line count — and that is what the `ch` reservation pins. */
 
-.footer-title { font: .63rem var(--font-mono); letter-spacing: .15em; text-transform: uppercase; color: var(--color-primary); }
-.footer-links { display: flex; flex-direction: column; gap: .7rem; margin-top: 1.25rem; font-size: .85rem; color: var(--color-muted-foreground); }
-.footer-links a:hover { color: var(--color-foreground); }
+.footer-title {
+  font: 0.63rem var(--font-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-muted-foreground);
+}
+.footer-links a:hover {
+  color: var(--color-foreground);
+}
 
-@keyframes marquee { to { transform: translateX(-50%); } }
-@keyframes scroll-line { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(1.25rem); opacity: 0; } }
-@utility animate-marquee { animation: marquee 25s linear infinite; }
-@utility animate-scroll-line { animation: scroll-line 1.6s ease-in-out infinite; }
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes scroll-line {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(1.25rem);
+    opacity: 0;
+  }
+}
+@utility animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+@utility animate-scroll-line {
+  animation: scroll-line 1.6s ease-in-out infinite;
+}
 
 /* The marquee is GSAP-driven so scroll velocity can modulate it. A CSS
    animation on the same element would write a competing `transform`, so the
@@ -314,7 +741,10 @@
    class is in the server HTML and removed on hydration is not an option here,
    so instead reduced motion is the only state that needs a static fallback —
    and there the strip should hold still anyway). */
-.marquee-track { will-change: transform; transform-style: preserve-3d; }
+.marquee-track {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
 
 /* The band is the camera for the strip. `perspective` here (not on the track)
    is what gives each item its own vanishing point as it crosses, so the row
@@ -326,36 +756,387 @@
    does not create a 3D-flattening context. A horizontal mask is layered on so
    items dissolve at the edges instead of being cut off mid-turn, which is what
    makes the rotation read as continuous rather than clipped. */
-.capability-band { position: relative; perspective: 620px; perspective-origin: 50% 50%; transform-style: preserve-3d; clip-path: inset(0); -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent); mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent); }
+.capability-band {
+  position: relative;
+  perspective: 620px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  clip-path: inset(0);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
 /* Each item turns independently, so each needs its own 3D context and a
    consistent pivot. `backface-visibility` keeps a far-turned item from flashing
    its reversed face at steep angles. */
-.marquee-item { transform-style: preserve-3d; transform-origin: 50% 50%; backface-visibility: hidden; will-change: transform, opacity; }
+.marquee-item {
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
 
 @media (width >= 40rem) {
-  .problem-row { grid-template-columns: 2rem 1fr minmax(12rem,.65fr); gap: 1.5rem; }
-  .problem-row > div { grid-column: auto; }
-  .process-grid { grid-template-columns: repeat(5,1fr); }
-  .process-step { border-right: 1px solid var(--color-border); }
-  .tech-ecosystem { grid-template-columns: repeat(2,1fr); }
-  .tech-core { grid-row: span 2; }
+  .problem-row {
+    grid-template-columns: 2rem 1fr minmax(12rem, 0.65fr);
+    gap: 1.5rem;
+  }
+  .problem-row > div {
+    grid-column: auto;
+  }
+  .process-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .process-step {
+    border-right: 1px solid var(--color-border);
+  }
+  .tech-ecosystem {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .tech-core {
+    grid-row: span 2;
+  }
 }
-@media (width < 64rem) { .hero-system { min-height: 24rem; } }
-@media (width < 40rem) { .hero-system { min-height: 22rem; } .system-node { font-size: .48rem; padding: .4rem; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+@media (width < 64rem) {
+  .hero-system {
+    min-height: 24rem;
+  }
+}
+@media (width < 40rem) {
+  .hero-system {
+    min-height: 22rem;
+  }
+  .system-node {
+    font-size: 0.48rem;
+    padding: 0.4rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   /* The packet dots are positioned entirely by JS, which is skipped under
      reduced motion, so they would sit unpositioned at the origin. The markup
      can't branch on the media query without breaking hydration, so they are
      hidden here instead. */
-  .signal-dot { display: none; }
+  .signal-dot {
+    display: none;
+  }
   /* useGsap skips its effect entirely under reduced motion, so anything that
      starts hidden and is revealed by a scrub needs its resolved state here or
      it stays invisible for good. */
-  .process-line-fill { transform: scaleX(1); }
-  .tech-core-icon { animation: none; opacity: 1; }
+  .process-line-fill {
+    transform: scaleX(1);
+  }
+  .tech-core-icon {
+    animation: none;
+    opacity: 1;
+  }
+  /* The global rule above only caps iteration count, so these would still play
+     once. The panel's rule has to resolve to its drawn state, while the ambient
+     ring and status dot are pure decoration that should not move at all. */
+  .chat-launcher-ping {
+    display: none;
+  }
+  .chat-launcher,
+  .chat-launcher-icon > svg {
+    animation: none;
+  }
+  .chat-launcher:hover {
+    transform: none;
+  }
+  .chat-status-dot {
+    animation: none;
+    opacity: 1;
+  }
+  .chat-panel-rule {
+    animation: none;
+    transform: scaleX(1);
+  }
 }
 
 /* The packet timelines are paused off-screen by useHeroNetwork; hiding the dots
    as well means a paused packet doesn't sit frozen mid-wire if the hero is
    scrolled back into view before the timeline resumes. */
-.hero-system-idle .signal-dot { opacity: 0 !important; }
+.hero-system-idle .signal-dot {
+  opacity: 0 !important;
+}
+
+/* ---- Site assistant ------------------------------------------------------ */
+/* Built from the vocabulary the sections already use: 1px borders, hairline
+   sweeps scaled from the left, color-mix tints and a dot lattice. Nothing here
+   animates a layout property, so the panel stays cheap to run over the hero's
+   simulation. */
+.chat-launcher {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid color-mix(in oklab, var(--color-primary) 45%, transparent);
+  color: var(--color-primary-foreground);
+  /* The gradient is oversized and slides on hover, so the fill reads as lit
+     rather than painted. 320% keeps enough travel for the shift to be legible
+     at this size. */
+  background-image: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    color-mix(in oklab, var(--color-primary) 55%, var(--color-accent)) 45%,
+    var(--color-accent) 100%
+  );
+  background-size: 320% 320%;
+  background-position: 0% 50%;
+  box-shadow:
+    0 0.75rem 2rem -0.5rem color-mix(in oklab, var(--color-primary) 45%, transparent),
+    0 0 0 0 color-mix(in oklab, var(--color-primary) 35%, transparent);
+  transition:
+    background-position 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s;
+  animation: chat-launcher-drift 9s ease-in-out infinite;
+}
+/* Hover takes over the ambient drift so the two can't fight for
+   background-position. */
+.chat-launcher:hover,
+.chat-launcher:focus-visible {
+  animation-play-state: paused;
+  background-position: 100% 50%;
+  transform: scale(1.06);
+  border-color: color-mix(in oklab, var(--color-accent) 70%, transparent);
+  box-shadow:
+    0 1rem 2.5rem -0.5rem color-mix(in oklab, var(--color-primary) 60%, transparent),
+    0 0 0 0.3rem color-mix(in oklab, var(--color-primary) 14%, transparent);
+}
+.chat-launcher:focus-visible {
+  outline: none;
+}
+.chat-launcher:active {
+  transform: scale(0.96);
+}
+/* Slow hue travel while idle: enough to catch peripheral vision without
+   reading as a notification. */
+@keyframes chat-launcher-drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 70% 50%;
+  }
+}
+/* Diagonal sheen crossing the face on hover, echoing .service-card::before. */
+.chat-launcher-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    color-mix(in oklab, white 55%, transparent) 50%,
+    transparent 65%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chat-launcher:hover .chat-launcher-sheen {
+  transform: translateX(130%);
+}
+/* Grid cell so the enter/exit icons overlap instead of reflowing the button. */
+.chat-launcher-icon {
+  position: relative;
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+}
+/* The icon gets its own life: a slight tilt-and-lift on hover, and a resting
+   bob so the button isn't inert before you reach it. */
+.chat-launcher-icon > svg {
+  animation: chat-icon-bob 3.6s ease-in-out infinite;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chat-launcher:hover .chat-launcher-icon > svg {
+  animation-play-state: paused;
+  transform: rotate(-8deg) scale(1.12);
+}
+.chat-launcher[data-open] .chat-launcher-icon > svg {
+  animation: none;
+}
+@keyframes chat-icon-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+/* Two rings on an offset loop. Siblings of the button rather than children, so
+   they expand past its clipped edge. */
+.chat-launcher-ping {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid color-mix(in oklab, var(--color-primary) 70%, transparent);
+  animation: chat-ping 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.chat-launcher-ping-delayed {
+  animation-delay: 1.6s;
+  border-color: color-mix(in oklab, var(--color-accent) 60%, transparent);
+}
+@keyframes chat-ping {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+.chat-panel {
+  box-shadow: 0 1.5rem 3.5rem -1rem color-mix(in oklab, black 55%, transparent);
+}
+/* Draws itself across the top edge as the panel opens. */
+.chat-panel-rule {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: chat-rule 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+@keyframes chat-rule {
+  to {
+    transform: scaleX(1);
+  }
+}
+.chat-panel-lattice {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  pointer-events: none;
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(circle at 100% 0%, black, transparent 70%);
+}
+.chat-status-dot {
+  width: 0.3rem;
+  height: 0.3rem;
+  background: var(--color-primary);
+  animation: chat-breathe 2.4s ease-in-out infinite;
+}
+@keyframes chat-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.chat-bubble {
+  position: relative;
+  max-width: 88%;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.chat-bubble-assistant {
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  overflow: hidden;
+}
+.chat-bubble-user {
+  margin-left: auto;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+.chat-bubble-error {
+  border: 1px solid color-mix(in oklab, var(--color-destructive) 40%, transparent);
+  color: var(--color-destructive);
+}
+/* Cursor-tracked wash, same mechanism as .service-card-spot. */
+.chat-bubble-spot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+  background: radial-gradient(
+    10rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-primary) 14%, transparent),
+    transparent 70%
+  );
+}
+.chat-bubble-assistant:hover .chat-bubble-spot {
+  opacity: 1;
+}
+.chat-suggestion {
+  position: relative;
+  border: 1px solid var(--color-border);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  text-align: left;
+  color: var(--color-muted-foreground);
+  transition:
+    color 0.25s,
+    border-color 0.25s,
+    background 0.25s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chat-suggestion:hover {
+  color: var(--color-foreground);
+  border-color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 7%, transparent);
+  transform: translateX(3px);
+}
+.chat-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.chat-input {
+  width: 100%;
+  border: 1px solid var(--color-input);
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-foreground);
+  outline: none;
+  transition: border-color 0.3s;
+}
+.chat-input::placeholder {
+  color: var(--color-muted-foreground);
+}
+.chat-input:focus-visible {
+  border-color: color-mix(in oklab, var(--color-primary) 55%, transparent);
+}
+.chat-input-rule {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chat-input:focus-visible ~ .chat-input-rule {
+  transform: scaleX(1);
+}
+.chat-send {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chat-send:not(:disabled):hover {
+  transform: translateY(-2px);
+}

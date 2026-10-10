@@ -9,6 +9,7 @@ import { Technology } from "@/components/sections/technology";
 import { WhyRootKube } from "@/components/sections/why-rootkube";
 import { About } from "@/components/sections/about";
 import { Footer } from "@/components/sections/footer";
+import { ChatWidget } from "@/components/sections/chat-widget";
 import { useAnchorScroll } from "@/motion/use-anchor-scroll";
 import { ScrollProgress } from "@/motion/scroll-progress";
 
@@ -31,6 +32,10 @@ export function RootKubeSite() {
       <WhyRootKube />
       <About />
       <Footer />
+      {/* Scoped here rather than the root layout for the same reason as
+          ScrollProgress: the 404 and error screens shouldn't offer an assistant
+          that can only answer questions about the marketing page. */}
+      <ChatWidget />
     </main>
   );
 }
